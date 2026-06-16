@@ -1,0 +1,47 @@
+h1 {
+  font-size: 60px;
+  text-align: center;
+  color: rgb(0, 0, 0);
+}
+
+p,
+ul, li {
+  font-size: 20px;
+  line-height: 3;
+  letter-spacing: 1px;
+  color: rgb(0, 0, 0);
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  width: 280px;
+}
+
+.day {
+  padding: 8px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.day:hover {
+  background: #40cdf8;
+}
+
+.day.highlighted {
+  background: #4f86f7;
+  color: white;
+}
+
+.day.empty {
+  cursor: default;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 280px;
+}
