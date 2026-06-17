@@ -9,6 +9,7 @@ let state = {
     pto: { hours: 0 },
     sick: { hours: 0 }
   },
+  // The values for days will be in the format "YYYY-MM-DD": "day type"
   days: {}
 };
 
@@ -25,6 +26,7 @@ function renderCalendar() {
     month: 'long', year: 'numeric'
   });
 
+
   // Day-of-week headers
   ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
     const el = document.createElement('div');
@@ -34,6 +36,7 @@ function renderCalendar() {
     calendar.appendChild(el);
   });
 
+
   // Empty cells before the 1st
   const firstDay = new Date(year, month, 1).getDay();
   for (let i = 0; i < firstDay; i++) {
@@ -42,7 +45,10 @@ function renderCalendar() {
     calendar.appendChild(el);
   }
 
+
   // Day cells
+  // Works by getting the last day of the month previous to month plus 1,
+  // which gives the number of days in month + 0:
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   for (let d = 1; d <= daysInMonth; d++) {
     const key = `${year}-${month}-${d}`;
@@ -57,14 +63,17 @@ function renderCalendar() {
   }
 }
 
+
 document.getElementById('prev').addEventListener('click', () => {
   current.setMonth(current.getMonth() - 1);
   renderCalendar();
 });
 
+
 document.getElementById('next').addEventListener('click', () => {
   current.setMonth(current.getMonth() + 1);
   renderCalendar();
 });
+
 
 renderCalendar();
