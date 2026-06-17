@@ -1,6 +1,17 @@
+// Store highlights as "YYYY-M-D" strings for easy lookup:
 let current = new Date();
-// Store highlights as "YYYY-M-D" strings for easy lookup
-const highlighted = new Set();
+
+// Define structure of user data to be exported in JSON:
+let state = {
+  // Default to 8-hour workday (users may change this):
+  hoursPerDay: 8,
+  available: {
+    pto: { hours: 0 },
+    sick: { hours: 0 }
+  },
+  days: {}
+};
+
 
 function renderCalendar() {
   const calendar = document.getElementById('calendar');
