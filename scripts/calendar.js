@@ -1,4 +1,4 @@
-// Get current date in YYYY-MM-DD format
+// Get current date
 let current = new Date();
 
 // Define structure of user data to be exported in JSON:
@@ -25,6 +25,7 @@ function loadState() {
   }
 }
 
+
 // Read available time and hours per day from user:
 function initSettings() {
   const hoursPerDay = document.getElementById('hours-per-day');
@@ -43,6 +44,7 @@ function initSettings() {
     // Use 1 in the fallback case to prevent NaN calculations (zero division)
     // while the user is editing the text box:
     state.hoursPerDay = parseInt(hoursPerDay.value) || 1;
+
     // Refresh pto days and sick days using the new hoursPerDay value:
     ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
     sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
@@ -73,6 +75,72 @@ function initSettings() {
     saveState();
   });
 }
+
+
+// Use popup menu for users to mark days as PTO, Free PTO, or Sick:
+function openPopup(key, anchorE1) {
+  // key = date, anchorE1 = the day cell element to display the popup next to
+
+  // Remove existing popup:
+  closePopup();
+
+  const popup = document.createElement('div');
+  popup.id = 'day-popup';
+
+  // Define popup options. These will be stored as values in user JSON data,
+  // and will also be the CSS class names used to highlight calendar days.
+  // If the day has already been marked, push clear as an option:
+  const options = ['pto', 'free', 'sick'];
+  if (state.days[key]) {
+    options.push('clear');
+  }
+
+  // Define popup labels:
+  const labels = {
+    pto: 'PTO',
+    free: 'Free PTO',
+    sick: 'Sick',
+    clear: 'Clear'
+  };
+
+  options.forEach(option => {
+    const btn = document.createElement('button');
+    btn.textContent = labels[option];
+    
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (option === 'clear') {
+        delete state.days[key];
+      } else {
+        state.days[key] = option;
+      }
+      saveState();
+      renderCalendar();
+      closePopup();
+    });
+    popup.appendChild(btn);
+  });
+
+  // Position the popup by the clicked day cell by dynamically using CSS
+  // to style it depending on where the user clicks:
+  const rect = anchorE1.getBoundingClientRect();
+  popup.style.position = 'fixed';
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 120) + 'px';
+  popup.style.left = Math.min(rect.left, window.innerWidth - 120) + 'px';
+
+  document.body.appendChild(popup);
+
+  // Close popup when clicking outside of it:
+  setTimeout(() => {
+    document.addEventListener('click', closePopup, { once: true });
+  }, 0);
+}
+
+function closePopup() {
+  const existing = document.getElementById('day-popup');
+  if (existing) existing.remove();
+}
+
 
 function renderCalendar() {
   const calendar = document.getElementById('calendar');
@@ -120,8 +188,9 @@ function renderCalendar() {
     el.className = 'day' + (state.days[key] ? ' ' + state.days[key]: '');
 
     el.textContent = d;
-    el.addEventListener('click', () => {
-      // TODO: Open popup menu when user clicks on a day
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openPopup(key, el);
     });
     calendar.appendChild(el);
   }
