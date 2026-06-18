@@ -9,6 +9,23 @@
 
 <body>
     <h1>PTO Calendar</h1>
+
+    <div id="settings">
+        <label>Hours per workday: <input type="number" id="hours-per-day" min="1" max="24" value="8" /></label>
+
+        <div>
+            <span>PTO Available:</span>
+            <label><input type="number" id="pto-hours" min="0" value="0" /> hours</label>
+            <label><input type="number" id="pto-days" min="0" value="0" /> days</label>
+        </div>
+
+        <div>
+            <span>Sick Days Available:</span>
+            <label><input type="number" id="sick-hours" min="0" value="0" /> hours</label>
+            <label><input type="number" id="sick-days" min="0" value="0" /> days</label>
+        </div>
+    </div>
+
     <div class="header">
         <button id="prev">‹</button>
         <span id="month-label"></span>
