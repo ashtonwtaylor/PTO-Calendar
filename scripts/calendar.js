@@ -25,6 +25,54 @@ function loadState() {
   }
 }
 
+// Read available time and hours per day from user:
+function initSettings() {
+  const hoursPerDay = document.getElementById('hours-per-day');
+  const ptoHours = document.getElementById('pto-hours');
+  const ptoDays = document.getElementById('pto-days');
+  const sickHours = document.getElementById('sick-hours');
+  const sickDays = document.getElementById('sick-days');
+
+  hoursPerDay.value = state.hoursPerDay;
+  ptoHours.value = state.available.pto.hours;
+  ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
+  sickHours.value = state.available.sick.hours;
+  sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
+
+  hoursPerDay.addEventListener('input', () => {
+    // Use 1 in the fallback case to prevent NaN calculations (zero division)
+    // while the user is editing the text box:
+    state.hoursPerDay = parseInt(hoursPerDay.value) || 1;
+    // Refresh pto days and sick days using the new hoursPerDay value:
+    ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
+    sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
+    saveState();
+  });
+
+  ptoHours.addEventListener('input', () => {
+    state.available.pto.hours = parseInt(ptoHours.value) || 0;
+    ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
+    saveState();
+  });
+
+  ptoDays.addEventListener('input', () => {
+    state.available.pto.hours = (parseInt(ptoDays.value) || 0) * state.hoursPerDay;
+    ptoHours.value = state.available.pto.hours;
+    saveState();
+  });
+
+  sickHours.addEventListener('input', () => {
+    state.available.sick.hours = parseInt(sickHours.value) || 0;
+    sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
+    saveState();
+  });
+
+  sickDays.addEventListener('input', () => {
+    state.available.sick.hours = (parseInt(sickDays.value) || 0) * state.hoursPerDay;
+    sickHours.value = state.available.sick.hours;
+    saveState();
+  });
+}
 
 function renderCalendar() {
   const calendar = document.getElementById('calendar');
@@ -92,4 +140,5 @@ document.getElementById('next').addEventListener('click', () => {
 });
 
 loadState();
+initSettings();
 renderCalendar();
