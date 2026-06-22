@@ -5,6 +5,7 @@ let current = new Date();
 let state = {
   // Default to 8-hour workday (users may change this):
   hoursPerDay: 8,
+  viewMode: 'days',
   available: {
     pto: { hours: 0 },
     sick: { hours: 0 }
@@ -79,6 +80,31 @@ function initSettings() {
     saveState();
     updateSummary();
   });
+
+  document.getElementById('toggle-view').addEventListener('click', () => {
+    toggleView();
+  });
+}
+
+
+function toggleView() {
+  state.viewMode = state.viewMode === 'hours' ? 'days' : 'hours';
+  saveState();
+  applyView();
+}
+
+function applyView() {
+  const isHours = state.viewMode === 'hours';
+
+  document.getElementById('toggle-view').textContent = isHours ? 'Switch to Days View' : 'Switch to Hours View';
+
+  // Show/hide settings inputs depending on view:
+  document.getElementById('pto-hours').parentElement.style.display = isHours ? '' : 'none';
+  document.getElementById('pto-days').parentElement.style.display = isHours ? 'none' : '';
+  document.getElementById('sick-hours').parentElement.style.display = isHours ? '' : 'none';
+  document.getElementById('sick-days').parentElement.style.display = isHours ? 'none' : '';
+
+  updateSummary();
 }
 
 
@@ -148,6 +174,7 @@ function closePopup() {
 
 
 function updateSummary() {
+  const isHours = state.viewMode === 'hours';
   const ptoUsedHours = Object.values(state.days).filter(t => t === 'pto').length * state.hoursPerDay;
   const sickUsedHours = Object.values(state.days).filter(t => t === 'sick').length * state.hoursPerDay;
 
@@ -160,6 +187,11 @@ function updateSummary() {
   document.getElementById('sick-avail-hours').textContent = state.available.sick.hours;
   document.getElementById('sick-used-days').textContent = Math.floor(sickUsedHours / state.hoursPerDay);
   document.getElementById('sick-avail-days').textContent = Math.floor(state.available.sick.hours / state.hoursPerDay);
+
+  document.getElementById('pto-summary-hours').style.display = isHours ? '' : 'none';
+  document.getElementById('pto-summary-days').style.display = isHours ? 'none' : '';
+  document.getElementById('sick-summary-hours').style.display = isHours ? '' : 'none';
+  document.getElementById('sick-summary-days').style.display = isHours ? 'none' : '';
 }
 
 
@@ -233,4 +265,5 @@ document.getElementById('next').addEventListener('click', () => {
 
 loadState();
 initSettings();
+applyView();
 renderCalendar();

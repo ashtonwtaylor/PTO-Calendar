@@ -12,6 +12,7 @@
 
     <div id="settings">
         <label>Hours per workday: <input type="number" id="hours-per-day" min="1" max="24" value="8" /></label>
+        <button id="toggle-view">Switch to Hours View</button>
 
         <div>
             <span>Total PTO:</span>
@@ -33,10 +34,18 @@
     </div>
     <div class="calendar" id="calendar"></div>
     <div id="summary">
-        <p>PTO Used/Available: <span id="pto-used-hours">0</span> / <span id="pto-avail-hours">0</span> hrs &nbsp;(<span
-                id="pto-used-days">0</span> / <span id="pto-avail-days">0</span> days)</p>
-        <p>Sick Used/Available: <span id="sick-used-hours">0</span> / <span id="sick-avail-hours">0</span> hrs &nbsp;(<span
-                id="sick-used-days">0</span> / <span id="sick-avail-days">0</span> days)</p>
+        <p>PTO Used:
+            <span id="pto-summary-hours"><span id="pto-used-hours">0</span> / <span id="pto-avail-hours">0</span>
+                hrs</span>
+            <span id="pto-summary-days"><span id="pto-used-days">0</span> / <span id="pto-avail-days">0</span>
+                days</span>
+        </p>
+        <p>Sick Used:
+            <span id="sick-summary-hours"><span id="sick-used-hours">0</span> / <span id="sick-avail-hours">0</span>
+                hrs</span>
+            <span id="sick-summary-days"><span id="sick-used-days">0</span> / <span id="sick-avail-days">0</span>
+                days</span>
+        </p>
     </div>
     <script src="scripts/calendar.js"></script>
 </body>
