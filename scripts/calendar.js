@@ -49,30 +49,35 @@ function initSettings() {
     ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
     sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
     saveState();
+    updateSummary();
   });
 
   ptoHours.addEventListener('input', () => {
     state.available.pto.hours = parseInt(ptoHours.value) || 0;
     ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
     saveState();
+    updateSummary();
   });
 
   ptoDays.addEventListener('input', () => {
     state.available.pto.hours = (parseInt(ptoDays.value) || 0) * state.hoursPerDay;
     ptoHours.value = state.available.pto.hours;
     saveState();
+    updateSummary();
   });
 
   sickHours.addEventListener('input', () => {
     state.available.sick.hours = parseInt(sickHours.value) || 0;
     sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
     saveState();
+    updateSummary();
   });
 
   sickDays.addEventListener('input', () => {
     state.available.sick.hours = (parseInt(sickDays.value) || 0) * state.hoursPerDay;
     sickHours.value = state.available.sick.hours;
     saveState();
+    updateSummary();
   });
 }
 
@@ -142,6 +147,22 @@ function closePopup() {
 }
 
 
+function updateSummary() {
+  const ptoUsedHours = Object.values(state.days).filter(t => t === 'pto').length * state.hoursPerDay;
+  const sickUsedHours = Object.values(state.days).filter(t => t === 'sick').length * state.hoursPerDay;
+
+  document.getElementById('pto-used-hours').textContent = ptoUsedHours;
+  document.getElementById('pto-avail-hours').textContent = state.available.pto.hours;
+  document.getElementById('pto-used-days').textContent = Math.floor(ptoUsedHours / state.hoursPerDay);
+  document.getElementById('pto-avail-days').textContent = Math.floor(state.available.pto.hours / state.hoursPerDay);
+
+  document.getElementById('sick-used-hours').textContent = sickUsedHours;
+  document.getElementById('sick-avail-hours').textContent = state.available.sick.hours;
+  document.getElementById('sick-used-days').textContent = Math.floor(sickUsedHours / state.hoursPerDay);
+  document.getElementById('sick-avail-days').textContent = Math.floor(state.available.sick.hours / state.hoursPerDay);
+}
+
+
 function renderCalendar() {
   const calendar = document.getElementById('calendar');
   const label = document.getElementById('month-label');
@@ -194,6 +215,8 @@ function renderCalendar() {
     });
     calendar.appendChild(el);
   }
+
+  updateSummary();
 }
 
 
