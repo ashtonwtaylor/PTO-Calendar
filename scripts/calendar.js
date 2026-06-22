@@ -90,6 +90,8 @@ function initSettings() {
   document.getElementById('import-input').addEventListener('change', (e) => {
     if (e.target.files[0]) importData(e.target.files[0]);
   });
+
+  document.getElementById('clear-btn').addEventListener('click', clearData);
 }
 
 
@@ -146,6 +148,20 @@ function refreshSettings() {
   document.getElementById('pto-days').value = Math.floor(state.available.pto.hours / state.hoursPerDay);
   document.getElementById('sick-hours').value = state.available.sick.hours;
   document.getElementById('sick-days').value = Math.floor(state.available.sick.hours / state.hoursPerDay);
+}
+
+
+function clearData() {
+  if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
+  state.hoursPerDay = 8;
+  state.viewMode = 'days';
+  state.available.pto.hours = 0;
+  state.available.sick.hours = 0;
+  state.days = {};
+  saveState();
+  refreshSettings();
+  applyView();
+  renderCalendar();
 }
 
 
