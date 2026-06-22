@@ -73,6 +73,13 @@ ul, li {
   background: #b4b4b4;
 }
 
+#data-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: fit-content;
+}
+
 .header {
   display: flex;
   justify-content: space-between;

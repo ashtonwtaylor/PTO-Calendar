@@ -84,6 +84,12 @@ function initSettings() {
   document.getElementById('toggle-view').addEventListener('click', () => {
     toggleView();
   });
+
+  document.getElementById('export-btn').addEventListener('click', exportData);
+  
+  document.getElementById('import-input').addEventListener('change', (e) => {
+    if (e.target.files[0]) importData(e.target.files[0]);
+  });
 }
 
 
@@ -105,6 +111,41 @@ function applyView() {
   document.getElementById('sick-days').parentElement.style.display = isHours ? 'none' : '';
 
   updateSummary();
+}
+
+
+// Saving/loading with JSON:
+function exportData() {
+  const json = JSON.stringify(state, null, 2);
+  const blob = new Blob([json], { type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pto-data.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    Object.assign(state, JSON.parse(e.target.result));
+    saveState();
+    refreshSettings();
+    applyView();
+    renderCalendar();
+  };
+  reader.readAsText(file);
+}
+
+// Refresh settings when user imports from JSON (not using initSettings to avoid
+// duplicate listener creation):
+function refreshSettings() {
+  document.getElementById('hours-per-day').value = state.hoursPerDay;
+  document.getElementById('pto-hours').value = state.available.pto.hours;
+  document.getElementById('pto-days').value = Math.floor(state.available.pto.hours / state.hoursPerDay);
+  document.getElementById('sick-hours').value = state.available.sick.hours;
+  document.getElementById('sick-days').value = Math.floor(state.available.sick.hours / state.hoursPerDay);
 }
 
 
