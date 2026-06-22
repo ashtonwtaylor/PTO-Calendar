@@ -1,5 +1,5 @@
 // Get current date
-let current = new Date();
+let currentYear = new Date().getFullYear();
 
 // Define structure of user data to be exported in JSON:
 let state = {
@@ -259,56 +259,66 @@ function updateSummary() {
 
 
 function renderCalendar() {
-  const calendar = document.getElementById('calendar');
-  const label = document.getElementById('month-label');
-  calendar.innerHTML = '';
+  const container = document.getElementById('calendar');
+  container.innerHTML = '';
 
-  const year = current.getFullYear();
-  const month = current.getMonth();
+  document.getElementById('year-label').textContent = currentYear;
 
-  label.textContent = new Date(year, month).toLocaleString('default', {
-    month: 'long', year: 'numeric'
-  });
+  for (let month = 0; month < 12; month++) {
+    const monthWrapper = document.createElement('div');
+    monthWrapper.className = 'month';
 
+    const monthLabel = document.createElement('div');
+    monthLabel.className = 'month-label';
+    monthLabel.textContent = new Date(currentYear, month).toLocaleString('default', { month: 'long' });
+    monthWrapper.appendChild(monthLabel);
 
-  // Day-of-week headers:
-  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => {
-    const el = document.createElement('div');
-    el.className = 'day';
-    el.textContent = d;
-    el.style.fontWeight = 'bold';
-    calendar.appendChild(el);
-  });
+    const grid = document.createElement('div');
+    grid.className = 'month-grid';
 
 
-  // Empty cells before the 1st:
-  const firstDay = new Date(year, month, 1).getDay();
-  for (let i = 0; i < firstDay; i++) {
-    const el = document.createElement('div');
-    el.className = 'day empty';
-    calendar.appendChild(el);
-  }
-
-
-  // Day cells:
-  // Works by getting the last day of the month previous to month plus 1,
-  // which gives the number of days in month + 0:
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  // Create elements for each day of the month:
-  for (let d = 1; d <= daysInMonth; d++) {
-    const key = `${year}-${month}-${d}`;
-    const el = document.createElement('div');
-
-    // Append the day type to the class name, if a type exists for that day:
-    el.className = 'day' + (state.days[key] ? ' ' + state.days[key]: '');
-
-    el.textContent = d;
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      openPopup(key, el);
+    // Day-of-week headers:
+    ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'day-header';
+      el.textContent = d;
+      grid.appendChild(el);
     });
-    calendar.appendChild(el);
+
+
+    // Empty cells before the 1st:
+    const firstDay = new Date(currentYear, month, 1).getDay();
+    for (let i = 0; i < firstDay; i++) {
+      const el = document.createElement('div');
+      el.className = 'day empty';
+      grid.appendChild(el);
+    }
+
+
+    // Day cells:
+    // Works by getting the last day of the month previous to month plus 1,
+    // which gives the number of days in month + 0:
+    const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
+
+    // Create elements for each day of the month:
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = `${currentYear}-${month}-${d}`;
+      const el = document.createElement('div');
+
+      // Append the day type to the class name, if a type exists for that day:
+      el.className = 'day' + (state.days[key] ? ' ' + state.days[key] : '');
+
+      el.textContent = d;
+
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openPopup(key, el);
+      });
+      grid.appendChild(el);
+    }
+
+    monthWrapper.appendChild(grid);
+    container.appendChild(monthWrapper);
   }
 
   updateSummary();
@@ -316,13 +326,13 @@ function renderCalendar() {
 
 
 document.getElementById('prev').addEventListener('click', () => {
-  current.setMonth(current.getMonth() - 1);
+  currentYear--;
   renderCalendar();
 });
 
 
 document.getElementById('next').addEventListener('click', () => {
-  current.setMonth(current.getMonth() + 1);
+  currentYear++;
   renderCalendar();
 });
 
