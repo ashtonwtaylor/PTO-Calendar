@@ -12,6 +12,12 @@ ul, li {
   color: rgb(0, 0, 0);
 }
 
+#year-label {
+  font-size: 3em;
+  font-weight: bold;
+}
+
+
 .calendar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
