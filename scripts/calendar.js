@@ -233,6 +233,12 @@ function updateSummary() {
   document.getElementById('pto-summary-days').style.display = isHours ? 'none' : '';
   document.getElementById('sick-summary-hours').style.display = isHours ? '' : 'none';
   document.getElementById('sick-summary-days').style.display = isHours ? 'none' : '';
+
+  document.getElementById('pto-summary-hours').classList.toggle('exceeded', ptoUsedHours > state.available.pto.hours);
+  document.getElementById('pto-summary-days').classList.toggle('exceeded', ptoUsedHours > state.available.pto.hours);
+  document.getElementById('sick-summary-hours').classList.toggle('exceeded', sickUsedHours > state.available.sick.hours);
+  document.getElementById('sick-summary-days').classList.toggle('exceeded', sickUsedHours > state.available.sick.hours);
+
 }
 
 

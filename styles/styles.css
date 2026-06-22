@@ -73,6 +73,10 @@ ul, li {
   background: #b4b4b4;
 }
 
+.exceeded {
+  color: red;
+}
+
 #data-controls {
   display: flex;
   flex-direction: column;
