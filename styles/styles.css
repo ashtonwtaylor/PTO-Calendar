@@ -14,9 +14,38 @@ ul, li {
 
 .calendar {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
   gap: 4px;
-  width: 280px;
+}
+
+.month-label {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.day-header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.75em;
+  padding: 4px 0;
 }
 
 .day {
@@ -88,5 +117,27 @@ ul, li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 280px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+
+@media (max-width: 900px) {
+  .calendar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .calendar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 400px) {
+  .calendar {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
