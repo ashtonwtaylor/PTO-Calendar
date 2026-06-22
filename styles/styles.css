@@ -30,13 +30,47 @@ ul, li {
   background: #40cdf8;
 }
 
-.day.highlighted {
+.day.pto {
   background: #4f86f7;
+  color: white;
+}
+
+.day.free {
+  background: #4caf50;
+  color: white;
+}
+
+.day.sick {
+  background: #f7a44f;
   color: white;
 }
 
 .day.empty {
   cursor: default;
+}
+
+#day-popup {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1000;
+}
+
+#day-popup button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+}
+
+#day-popup button:hover {
+  background: #b4b4b4;
 }
 
 .header {
