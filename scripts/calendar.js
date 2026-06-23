@@ -13,17 +13,35 @@ const db = initializeFirestore(app, {
 // Auth functions:
 
 async function signInWithGoogle() {
-  const provider = new GoogleAuthProvider();
-  await signInWithPopup(auth, provider);
+  try {
+    const provider = new GoogleAuthProvider();
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    showAuthError('Google sign-in failed. Please try again.');
+  }
 }
 
 async function signInAsGuest() {
-  await signInAnonymously(auth);
+  try {
+    await signInAnonymously(auth);
+  } catch (err) {
+    showAuthError('Could not sign in. Please try again.');
+  }
 }
 
 async function linkGoogleAccount() {
-  const provider = new GoogleAuthProvider();
-  await linkWithPopup(auth.currentUser, provider);
+  try {
+    const provider = new GoogleAuthProvider();
+    await linkWithPopup(auth.currentUser, provider);
+  } catch (err) {
+    showAuthError('Could not link account. Please try again.');
+  }
+}
+
+function showAuthError(message) {
+  const el = document.getElementById('auth-error');
+  el.textContent = message;
+  el.style.display = '';
 }
 
 async function handleSignOut() {
