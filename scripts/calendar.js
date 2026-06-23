@@ -34,7 +34,11 @@ async function linkGoogleAccount() {
     const provider = new GoogleAuthProvider();
     await linkWithPopup(auth.currentUser, provider);
   } catch (err) {
-    showAuthError('Could not link account. Please try again.');
+    if (err.code === 'auth/credential-already-in-use') {
+      showAuthError('This Google account has already been linked. Sign out and sign in with Google instead.');
+    } else {
+      showAuthError('Could not link account. Please try again.');
+    }
   }
 }
 
