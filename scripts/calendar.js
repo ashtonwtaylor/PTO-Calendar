@@ -3,6 +3,13 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, linkWi
 import { getFirestore, doc, getDoc, setDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+enableIndexedDbPersistence(db).catch(err => {
+  console.warn('Offline persistence unavailable:', err.code);
+});
 
 // Get current date
 let currentYear = new Date().getFullYear();
