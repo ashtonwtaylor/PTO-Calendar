@@ -123,6 +123,11 @@ function onUserSignedIn(user) {
 }
 
 function onUserSignedOut() {
+  state.hoursPerDay = 8;
+  state.viewMode = 'days';
+  state.available.pto.hours = 0;
+  state.available.sick.hours = 0;
+  state.days = {};
   document.getElementById('auth-overlay').style.display = 'flex';
   document.getElementById('main-content').style.display = 'none';
 }
