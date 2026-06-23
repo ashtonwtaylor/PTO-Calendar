@@ -11,6 +11,51 @@ enableIndexedDbPersistence(db).catch(err => {
   console.warn('Offline persistence unavailable:', err.code);
 });
 
+
+// Auth functions:
+
+async function signInWithGoogle() {
+  const provider = new GoogleAuthProvider();
+  await signInWithPopup(auth, provider);
+}
+
+async function signInAsGuest() {
+  await signInAnonymously(auth);
+}
+
+async function linkGoogleAccount() {
+  const provider = new GoogleAuthProvider();
+  await linkWithPopup(auth.currentUser, provider);
+}
+
+async function handleSignOut() {
+  await signOut(auth);
+}
+
+function onUserSignedIn(user) {
+  document.getElementById('auth-overlay').style.display = 'none';
+  document.getElementById('user-label').textContent = user.isAnonymous ? 'Guest' : user.email;
+  document.getElementById('link-account-btn').style.display = user.isAnonymous ? '' : 'none';
+}
+
+function onUserSignedOut() {
+  document.getElementById('auth-overlay').style.display = 'flex';
+}
+
+// Firebase listener, fires automatically whenever auth state changes
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    onUserSignedIn(user);
+    await loadStateFromFirestore(user.uid);
+    initSettings();
+    applyView();
+    renderCalendar();
+  } else {
+    onUserSignedOut();
+  }
+});
+
+
 // Get current date
 let currentYear = new Date().getFullYear();
 
@@ -99,12 +144,18 @@ function initSettings() {
   });
 
   document.getElementById('export-btn').addEventListener('click', exportData);
-  
+
   document.getElementById('import-input').addEventListener('change', (e) => {
     if (e.target.files[0]) importData(e.target.files[0]);
   });
 
   document.getElementById('clear-btn').addEventListener('click', clearData);
+
+  document.getElementById('google-signin-btn').addEventListener('click', signInWithGoogle);
+  document.getElementById('anonymous-signin-btn').addEventListener('click', signInAsGuest);
+  document.getElementById('link-account-btn').addEventListener('click', linkGoogleAccount);
+  document.getElementById('signout-btn').addEventListener('click', handleSignOut);
+
 }
 
 
