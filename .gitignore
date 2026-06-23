@@ -1,1 +1,3 @@
 scripts/firebase-config.js
+firebase-debug.log
+.firebase/
