@@ -32,6 +32,73 @@ async function handleSignOut() {
   await signOut(auth);
 }
 
+function initAuth() {
+  document.getElementById('google-signin-btn').addEventListener('click', signInWithGoogle);
+  document.getElementById('anonymous-signin-btn').addEventListener('click', signInAsGuest);
+  document.getElementById('link-account-btn').addEventListener('click', linkGoogleAccount);
+  document.getElementById('signout-btn').addEventListener('click', handleSignOut);
+}
+
+function initControls() {
+  const hoursPerDay = document.getElementById('hours-per-day');
+  const ptoHours = document.getElementById('pto-hours');
+  const ptoDays = document.getElementById('pto-days');
+  const sickHours = document.getElementById('sick-hours');
+  const sickDays = document.getElementById('sick-days');
+
+  hoursPerDay.addEventListener('input', () => {
+    // Use 1 in the fallback case to prevent NaN calculations (zero division)
+    // while the user is editing the text box:
+    state.hoursPerDay = parseInt(hoursPerDay.value) || 1;
+
+    // Refresh pto days and sick days using the new hoursPerDay value:
+    ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
+    sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
+    saveStateToFirestore();
+    updateSummary();
+  });
+
+  ptoHours.addEventListener('input', () => {
+    state.available.pto.hours = parseInt(ptoHours.value) || 0;
+    ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
+    saveStateToFirestore();
+    updateSummary();
+  });
+
+  ptoDays.addEventListener('input', () => {
+    state.available.pto.hours = (parseInt(ptoDays.value) || 0) * state.hoursPerDay;
+    ptoHours.value = state.available.pto.hours;
+    saveStateToFirestore();
+    updateSummary();
+  });
+
+  sickHours.addEventListener('input', () => {
+    state.available.sick.hours = parseInt(sickHours.value) || 0;
+    sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
+    saveStateToFirestore();
+    updateSummary();
+  });
+
+  sickDays.addEventListener('input', () => {
+    state.available.sick.hours = (parseInt(sickDays.value) || 0) * state.hoursPerDay;
+    sickHours.value = state.available.sick.hours;
+    saveStateToFirestore();
+    updateSummary();
+  });
+
+  document.getElementById('toggle-view').addEventListener('click', () => {
+    toggleView();
+  });
+
+  document.getElementById('export-btn').addEventListener('click', exportData);
+
+  document.getElementById('import-input').addEventListener('change', (e) => {
+    if (e.target.files[0]) importData(e.target.files[0]);
+  });
+
+  document.getElementById('clear-btn').addEventListener('click', clearData);
+}
+
 function onUserSignedIn(user) {
   document.getElementById('auth-overlay').style.display = 'none';
   document.getElementById('user-label').textContent = user.isAnonymous ? 'Guest' : user.email;
@@ -56,7 +123,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 
-// Get current date
+// Get current year
 let currentYear = new Date().getFullYear();
 
 // Define structure of user data to be exported in JSON:
@@ -110,77 +177,12 @@ async function saveStateToFirestore() {
 }
 
 
-// Read available time and hours per day from user:
 function initSettings() {
-  const hoursPerDay = document.getElementById('hours-per-day');
-  const ptoHours = document.getElementById('pto-hours');
-  const ptoDays = document.getElementById('pto-days');
-  const sickHours = document.getElementById('sick-hours');
-  const sickDays = document.getElementById('sick-days');
-
-  hoursPerDay.value = state.hoursPerDay;
-  ptoHours.value = state.available.pto.hours;
-  ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
-  sickHours.value = state.available.sick.hours;
-  sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
-
-  hoursPerDay.addEventListener('input', () => {
-    // Use 1 in the fallback case to prevent NaN calculations (zero division)
-    // while the user is editing the text box:
-    state.hoursPerDay = parseInt(hoursPerDay.value) || 1;
-
-    // Refresh pto days and sick days using the new hoursPerDay value:
-    ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
-    sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
-    saveStateToFirestore();
-    updateSummary();
-  });
-
-  ptoHours.addEventListener('input', () => {
-    state.available.pto.hours = parseInt(ptoHours.value) || 0;
-    ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
-    saveStateToFirestore();
-    updateSummary();
-  });
-
-  ptoDays.addEventListener('input', () => {
-    state.available.pto.hours = (parseInt(ptoDays.value) || 0) * state.hoursPerDay;
-    ptoHours.value = state.available.pto.hours;
-    saveStateToFirestore();
-    updateSummary();
-  });
-
-  sickHours.addEventListener('input', () => {
-    state.available.sick.hours = parseInt(sickHours.value) || 0;
-    sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
-    saveStateToFirestore();
-    updateSummary();
-  });
-
-  sickDays.addEventListener('input', () => {
-    state.available.sick.hours = (parseInt(sickDays.value) || 0) * state.hoursPerDay;
-    sickHours.value = state.available.sick.hours;
-    saveStateToFirestore();
-    updateSummary();
-  });
-
-  document.getElementById('toggle-view').addEventListener('click', () => {
-    toggleView();
-  });
-
-  document.getElementById('export-btn').addEventListener('click', exportData);
-
-  document.getElementById('import-input').addEventListener('change', (e) => {
-    if (e.target.files[0]) importData(e.target.files[0]);
-  });
-
-  document.getElementById('clear-btn').addEventListener('click', clearData);
-
-  document.getElementById('google-signin-btn').addEventListener('click', signInWithGoogle);
-  document.getElementById('anonymous-signin-btn').addEventListener('click', signInAsGuest);
-  document.getElementById('link-account-btn').addEventListener('click', linkGoogleAccount);
-  document.getElementById('signout-btn').addEventListener('click', handleSignOut);
-
+  document.getElementById('hours-per-day').value = state.hoursPerDay;
+  document.getElementById('pto-hours').value = state.available.pto.hours;
+  document.getElementById('pto-days').value = Math.floor(state.available.pto.hours / state.hoursPerDay);
+  document.getElementById('sick-hours').value = state.available.sick.hours;
+  document.getElementById('sick-days').value = Math.floor(state.available.sick.hours / state.hoursPerDay);
 }
 
 
@@ -222,23 +224,12 @@ function importData(file) {
   reader.onload = (e) => {
     Object.assign(state, JSON.parse(e.target.result));
     saveStateToFirestore();
-    refreshSettings();
+    initSettings();
     applyView();
     renderCalendar();
   };
   reader.readAsText(file);
 }
-
-// Refresh settings when user imports from JSON (not using initSettings to avoid
-// duplicate listener creation):
-function refreshSettings() {
-  document.getElementById('hours-per-day').value = state.hoursPerDay;
-  document.getElementById('pto-hours').value = state.available.pto.hours;
-  document.getElementById('pto-days').value = Math.floor(state.available.pto.hours / state.hoursPerDay);
-  document.getElementById('sick-hours').value = state.available.sick.hours;
-  document.getElementById('sick-days').value = Math.floor(state.available.sick.hours / state.hoursPerDay);
-}
-
 
 function clearData() {
   if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) return;
@@ -248,7 +239,7 @@ function clearData() {
   state.available.sick.hours = 0;
   state.days = {};
   saveStateToFirestore();
-  refreshSettings();
+  initSettings();
   applyView();
   renderCalendar();
 }
@@ -424,3 +415,6 @@ document.getElementById('next').addEventListener('click', () => {
   currentYear++;
   renderCalendar();
 });
+
+initAuth();
+initControls();
