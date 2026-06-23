@@ -101,12 +101,14 @@ function initControls() {
 
 function onUserSignedIn(user) {
   document.getElementById('auth-overlay').style.display = 'none';
+  document.getElementById('main-content').style.display = '';
   document.getElementById('user-label').textContent = user.isAnonymous ? 'Guest' : user.email;
   document.getElementById('link-account-btn').style.display = user.isAnonymous ? '' : 'none';
 }
 
 function onUserSignedOut() {
   document.getElementById('auth-overlay').style.display = 'flex';
+  document.getElementById('main-content').style.display = 'none';
 }
 
 // Firebase listener, fires automatically whenever auth state changes
