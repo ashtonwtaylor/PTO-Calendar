@@ -139,18 +139,6 @@ let state = {
   days: {}
 };
 
-// Loading/saving user data from local storage:
-function saveState() {
-  localStorage.setItem('ptoData', JSON.stringify(state));
-}
-
-function loadState() {
-  const saved = localStorage.getItem('ptoData');
-  if (saved) {
-    Object.assign(state, JSON.parse(saved));
-  }
-}
-
 
 // Loading/saving user data with Firestore:
 async function loadStateFromFirestore(uid) {
@@ -161,11 +149,7 @@ async function loadStateFromFirestore(uid) {
 
   if (docSnap.exists()) {
     Object.assign(state, docSnap.data());
-  } else {
-    // Use local storage as fallback:
-    loadState();
   }
-  saveState();
 }
 
 async function saveStateToFirestore() {
@@ -173,7 +157,6 @@ async function saveStateToFirestore() {
   if (!user) return;
   const docRef = doc(db, 'users', user.uid);
   await setDoc(docRef, state);
-  saveState();
 }
 
 
