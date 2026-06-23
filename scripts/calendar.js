@@ -85,6 +85,31 @@ function loadState() {
 }
 
 
+// Loading/saving user data with Firestore:
+async function loadStateFromFirestore(uid) {
+  // Handle for user data in Firestore:
+  const docRef = doc(db, 'users', uid);
+  // Fetch user data from Firestore using handle:
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    Object.assign(state, docSnap.data());
+  } else {
+    // Use local storage as fallback:
+    loadState();
+  }
+  saveState();
+}
+
+async function saveStateToFirestore() {
+  const user = auth.currentUser;
+  if (!user) return;
+  const docRef = doc(db, 'users', user.uid);
+  await setDoc(docRef, state);
+  saveState();
+}
+
+
 // Read available time and hours per day from user:
 function initSettings() {
   const hoursPerDay = document.getElementById('hours-per-day');
@@ -107,35 +132,35 @@ function initSettings() {
     // Refresh pto days and sick days using the new hoursPerDay value:
     ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
     sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
-    saveState();
+    saveStateToFirestore();
     updateSummary();
   });
 
   ptoHours.addEventListener('input', () => {
     state.available.pto.hours = parseInt(ptoHours.value) || 0;
     ptoDays.value = Math.floor(state.available.pto.hours / state.hoursPerDay);
-    saveState();
+    saveStateToFirestore();
     updateSummary();
   });
 
   ptoDays.addEventListener('input', () => {
     state.available.pto.hours = (parseInt(ptoDays.value) || 0) * state.hoursPerDay;
     ptoHours.value = state.available.pto.hours;
-    saveState();
+    saveStateToFirestore();
     updateSummary();
   });
 
   sickHours.addEventListener('input', () => {
     state.available.sick.hours = parseInt(sickHours.value) || 0;
     sickDays.value = Math.floor(state.available.sick.hours / state.hoursPerDay);
-    saveState();
+    saveStateToFirestore();
     updateSummary();
   });
 
   sickDays.addEventListener('input', () => {
     state.available.sick.hours = (parseInt(sickDays.value) || 0) * state.hoursPerDay;
     sickHours.value = state.available.sick.hours;
-    saveState();
+    saveStateToFirestore();
     updateSummary();
   });
 
@@ -161,7 +186,7 @@ function initSettings() {
 
 function toggleView() {
   state.viewMode = state.viewMode === 'hours' ? 'days' : 'hours';
-  saveState();
+  saveStateToFirestore();
   applyView();
 }
 
@@ -196,7 +221,7 @@ function importData(file) {
   const reader = new FileReader();
   reader.onload = (e) => {
     Object.assign(state, JSON.parse(e.target.result));
-    saveState();
+    saveStateToFirestore();
     refreshSettings();
     applyView();
     renderCalendar();
@@ -222,7 +247,7 @@ function clearData() {
   state.available.pto.hours = 0;
   state.available.sick.hours = 0;
   state.days = {};
-  saveState();
+  saveStateToFirestore();
   refreshSettings();
   applyView();
   renderCalendar();
@@ -266,7 +291,7 @@ function openPopup(key, anchorE1) {
       } else {
         state.days[key] = option;
       }
-      saveState();
+      saveStateToFirestore();
       renderCalendar();
       closePopup();
     });
@@ -399,8 +424,3 @@ document.getElementById('next').addEventListener('click', () => {
   currentYear++;
   renderCalendar();
 });
-
-loadState();
-initSettings();
-applyView();
-renderCalendar();
