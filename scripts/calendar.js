@@ -378,8 +378,19 @@ function closePopup() {
 
 function updateSummary() {
   const isHours = state.viewMode === 'hours';
-  const ptoUsedHours = Object.values(state.days).filter(t => t === 'pto').length * state.hoursPerDay;
-  const sickUsedHours = Object.values(state.days).filter(t => t === 'sick').length * state.hoursPerDay;
+  
+  // Sum hours accordingly for whole vs. partial entries:
+  let ptoUsedHours = 0;
+  let sickUsedHours = 0;
+  for (const v of Object.values(state.days)) {
+    if (typeof v === 'object') {
+      if (v.type === 'pto') { ptoUsedHours += v.hours; }
+      if (v.type === 'sick') { sickUsedHours += v.hours; }
+    } else {
+      if (v === 'pto') { ptoUsedHours += state.hoursPerDay; }
+      if (v === 'sick') { sickUsedHours += state.hoursPerDay; }
+    }
+  }
 
   document.getElementById('pto-used-hours').textContent = ptoUsedHours;
   document.getElementById('pto-avail-hours').textContent = state.available.pto.hours;
