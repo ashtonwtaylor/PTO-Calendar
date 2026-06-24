@@ -341,6 +341,10 @@ function openCustomHoursPopup(key, anchorE1, type) {
   input.value = typeof currentDay === 'object' ? currentDay.hours : state.hoursPerDay;
   input.style.width = '60px';
 
+  input.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
   const confirm = document.createElement('button');
   confirm.textContent = 'Confirm';
   confirm.addEventListener('click', (e) => {
@@ -469,6 +473,12 @@ function renderCalendar() {
       el.className = 'day' + (dayType ? ' ' + dayType : '');
 
       el.textContent = d;
+      if (typeof dayValue === 'object') {
+        const hoursLabel = document.createElement('div');
+        hoursLabel.className = 'day-hours';
+        hoursLabel.textContent = dayValue.hours + 'hrs';
+        el.appendChild(hoursLabel);
+      }
 
       el.addEventListener('click', (e) => {
         e.stopPropagation();

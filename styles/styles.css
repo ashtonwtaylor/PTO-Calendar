@@ -97,6 +97,11 @@ ul, li {
   border-radius: 4px;
 }
 
+.day-hours {
+  font-size: 0.65em;
+  opacity: 0.85;
+}
+
 .day:hover {
   background: #40cdf8;
 }
