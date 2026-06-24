@@ -390,12 +390,12 @@ function updateSummary() {
 
   document.getElementById('pto-used-hours').textContent = ptoUsedHours;
   document.getElementById('pto-avail-hours').textContent = state.available.pto.hours;
-  document.getElementById('pto-used-days').textContent = Math.floor(ptoUsedHours / state.hoursPerDay);
+  document.getElementById('pto-used-days').textContent = Math.round(ptoUsedHours / state.hoursPerDay * 100) / 100;
   document.getElementById('pto-avail-days').textContent = Math.floor(state.available.pto.hours / state.hoursPerDay);
 
   document.getElementById('sick-used-hours').textContent = sickUsedHours;
   document.getElementById('sick-avail-hours').textContent = state.available.sick.hours;
-  document.getElementById('sick-used-days').textContent = Math.floor(sickUsedHours / state.hoursPerDay);
+  document.getElementById('sick-used-days').textContent = Math.round(sickUsedHours / state.hoursPerDay * 100) / 100;
   document.getElementById('sick-avail-days').textContent = Math.floor(state.available.sick.hours / state.hoursPerDay);
 
   document.getElementById('pto-summary-hours').style.display = isHours ? '' : 'none';
