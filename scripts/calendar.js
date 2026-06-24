@@ -153,7 +153,7 @@ onAuthStateChanged(auth, async (user) => {
 // Get current year
 let currentYear = new Date().getFullYear();
 
-// Define structure of user data to be exported in JSON:
+// Define structure of user data:
 let state = {
   // Default to 8-hour workday (users may change this):
   hoursPerDay: 8,

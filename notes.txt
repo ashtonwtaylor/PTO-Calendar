@@ -1,3 +1,5 @@
 All months on same page
 
 Highlighted days reflect free PTO days
+
+Need to allow partial use of sick/PTO hours within any given day (e.g. only using 4.3 hours of sick or pto hours on any given day)
