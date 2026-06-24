@@ -265,20 +265,28 @@ function openPopup(key, anchorE1) {
   const popup = document.createElement('div');
   popup.id = 'day-popup';
 
+  // Partial time entries will be stored as an object (a pair, day type: hours
+  // as a float) with the date as a key, unlike regular whole days, which are
+  // just stored as a string value. Detect whether the day is full or partial:
+  const currentDay = state.days[key];
+  const currentType = typeof currentDay === 'object' ? currentDay.type : currentDay;
+
   // Define popup options. These will be stored as values in user JSON data,
   // and will also be the CSS class names used to highlight calendar days.
   // If the day has already been marked, push clear as an option:
   const options = ['pto', 'free', 'sick'];
-  if (state.days[key]) {
-    options.push('clear');
-  }
+  if (currentDay) { options.push('clear'); }
+
+  // If a pto or sick day is clicked, allow custom hour entry:
+  if (currentType === 'pto' || currentType === 'sick') { options.push('custom'); }
 
   // Define popup labels:
   const labels = {
     pto: 'PTO',
     free: 'Free PTO',
     sick: 'Sick',
-    clear: 'Clear'
+    clear: 'Clear',
+    custom: 'Custom hours'
   };
 
   options.forEach(option => {
@@ -289,12 +297,18 @@ function openPopup(key, anchorE1) {
       e.stopPropagation();
       if (option === 'clear') {
         delete state.days[key];
+        saveStateToFirestore();
+        renderCalendar();
+        closePopup();
+      } else if (option === 'custom') {
+        closePopup();
+        openCustomHoursPopup(key, anchorE1, currentType);
       } else {
         state.days[key] = option;
+        saveStateToFirestore();
+        renderCalendar();
+        closePopup();
       }
-      saveStateToFirestore();
-      renderCalendar();
-      closePopup();
     });
     popup.appendChild(btn);
   });
@@ -309,6 +323,48 @@ function openPopup(key, anchorE1) {
   document.body.appendChild(popup);
 
   // Close popup when clicking outside of it:
+  setTimeout(() => {
+    document.addEventListener('click', closePopup, { once: true });
+  }, 0);
+}
+
+function openCustomHoursPopup(key, anchorE1, type) {
+  const popup = document.createElement('div');
+  popup.id = 'day-popup';
+
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.min = '0.01';
+  input.max = state.hoursPerDay;
+  input.step = '1';
+  const currentDay = state.days[key];
+  input.value = typeof currentDay === 'object' ? currentDay.hours : state.hoursPerDay;
+  input.style.width = '60px';
+
+  const confirm = document.createElement('button');
+  confirm.textContent = 'Confirm';
+  confirm.addEventListener('click', (e) => {
+    e.stopPropagation();
+    // Only allow up to two decimal places:
+    const hours = Math.round(parseFloat(input.value) * 100) / 100;
+    if (hours > 0) {
+      state.days[key] = { type, hours };
+      saveStateToFirestore();
+      renderCalendar();
+    }
+    closePopup();
+  });
+
+  popup.appendChild(input);
+  popup.appendChild(confirm);
+
+  const rect = anchorE1.getBoundingClientRect();
+  popup.style.position = 'fixed';
+  popup.style.top = Math.min(rect.bottom + 4, window.innerHeight - 120) + 'px';
+  popup.style.left = Math.min(rect.left, window.innerWidth - 120) + 'px';
+
+  document.body.appendChild(popup);
+
   setTimeout(() => {
     document.addEventListener('click', closePopup, { once: true });
   }, 0);
