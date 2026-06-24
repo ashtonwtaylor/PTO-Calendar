@@ -332,6 +332,9 @@ function openCustomHoursPopup(key, anchorE1, type) {
   const popup = document.createElement('div');
   popup.id = 'day-popup';
 
+  popup.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
   const input = document.createElement('input');
   input.type = 'number';
   input.min = '0.01';
@@ -340,6 +343,10 @@ function openCustomHoursPopup(key, anchorE1, type) {
   const currentDay = state.days[key];
   input.value = typeof currentDay === 'object' ? currentDay.hours : state.hoursPerDay;
   input.style.width = '60px';
+
+  input.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
 
   const confirm = document.createElement('button');
   confirm.textContent = 'Confirm';
