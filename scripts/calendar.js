@@ -451,8 +451,11 @@ function renderCalendar() {
       const key = `${currentYear}-${month}-${d}`;
       const el = document.createElement('div');
 
-      // Append the day type to the class name, if a type exists for that day:
-      el.className = 'day' + (state.days[key] ? ' ' + state.days[key] : '');
+      // Append the day type to the class name, if a type exists for that day.
+      // Also, check for values with partial entries (objects):
+      const dayValue = state.days[key];
+      const dayType = typeof dayValue === 'object' ? dayValue.type : dayValue;
+      el.className = 'day' + (dayType ? ' ' + dayType : '');
 
       el.textContent = d;
 
