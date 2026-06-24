@@ -341,10 +341,6 @@ function openCustomHoursPopup(key, anchorE1, type) {
   input.value = typeof currentDay === 'object' ? currentDay.hours : state.hoursPerDay;
   input.style.width = '60px';
 
-  input.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
-
   const confirm = document.createElement('button');
   confirm.textContent = 'Confirm';
   confirm.addEventListener('click', (e) => {
@@ -368,10 +364,6 @@ function openCustomHoursPopup(key, anchorE1, type) {
   popup.style.left = Math.min(rect.left, window.innerWidth - 120) + 'px';
 
   document.body.appendChild(popup);
-
-  setTimeout(() => {
-    document.addEventListener('click', closePopup, { once: true });
-  }, 0);
 }
 
 function closePopup() {
