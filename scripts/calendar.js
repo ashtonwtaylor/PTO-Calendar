@@ -415,6 +415,10 @@ function updateSummary() {
   document.getElementById('sick-summary-hours').classList.toggle('exceeded', sickUsedHours > state.available.sick.hours);
   document.getElementById('sick-summary-days').classList.toggle('exceeded', sickUsedHours > state.available.sick.hours);
 
+  document.getElementById('pto-remaining-hours').textContent = state.available.pto.hours - ptoUsedHours;
+  document.getElementById('pto-remaining-days').textContent = Math.round((state.available.pto.hours - ptoUsedHours) / state.hoursPerDay * 100) / 100;
+  document.getElementById('sick-remaining-hours').textContent = state.available.sick.hours - sickUsedHours;
+  document.getElementById('sick-remaining-days').textContent = Math.round((state.available.sick.hours - sickUsedHours) / state.hoursPerDay * 100) / 100;
 }
 
 
