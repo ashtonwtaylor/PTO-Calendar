@@ -149,6 +149,10 @@ ul, li {
   background: #b4b4b4;
 }
 
+#summary p {
+  line-height: 1;
+}
+
 .exceeded {
   color: red;
 }
